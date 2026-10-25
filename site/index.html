@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>[Project name] — Touch_Grass</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-state="loading">
+
+  <!-- Your website. Replace this with your own structure. -->
+  <main id="website">
+    <div id="figure" aria-hidden="true">
+      <span class="piece"></span><span class="piece"></span><span class="piece"></span>
+      <span class="piece"></span><span class="piece"></span><span class="piece"></span>
+    </div>
+    <p id="story" aria-live="polite">…</p>
+  </main>
+
+  <!-- Debug panel: visible with ?debug or ?simulate=… -->
+  <aside id="debug" hidden>
+    <strong>TOUCH_GRASS · debug</strong>
+    <dl>
+      <dt>signal</dt><dd id="debug-signal">—</dd>
+      <dt>state</dt><dd id="debug-state">—</dd>
+      <dt>source</dt><dd id="debug-source">—</dd>
+    </dl>
+    <nav id="debug-states"></nav>
+  </aside>
+
+  <script src="main.js"></script>
+</body>
+</html>
