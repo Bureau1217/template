@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <base href="../">
+  <title>Presentation — Touch_Grass</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono&display=swap">
+  <!--
+    This page renders README.md as full screens: one screen per "## " section.
+    You don't need to edit it. Write your README.
+  -->
+  <style>
+    :root {
+      --paper: #ffffff; --ink: #111111; --pink: #ff00a6; --grass: #26ff00; --violet: #9673f0;
+      --display: "Geist", "Helvetica Neue", Arial, sans-serif;
+      --mono: "Geist Mono", ui-monospace, Menlo, monospace;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-snap-type: y proximity; scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    body { margin: 0; background: var(--paper); color: var(--pink); font-family: var(--display); font-size: clamp(18px, 1.5vw, 24px); line-height: 1.4; }
+    a { color: inherit; text-underline-offset: 4px; }
+
+    .screen { min-height: 100vh; scroll-snap-align: start; padding: clamp(24px, 4vw, 56px) clamp(16px, 3vw, 48px) 120px; border-top: 1px solid var(--ink); display: flex; flex-direction: column; gap: clamp(16px, 2.5vw, 32px); }
+    .screen:first-child { border-top: 0; justify-content: flex-end; }
+    .screen > * { max-width: 1400px; margin: 0; }
+
+    h1 { font-weight: 500; font-size: clamp(64px, 13vw, 220px); line-height: .9; letter-spacing: -.04em; }
+    h2 { font-family: var(--mono); font-weight: 400; font-size: 15px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink); display: flex; }
+    h2 span { background: var(--pink); color: var(--paper); padding: 4px 12px; border-radius: 40px; }
+    h3 { font-weight: 500; font-size: clamp(28px, 3vw, 44px); line-height: 1.1; margin: 12px 0 0; }
+    .screen:first-child p:first-of-type strong { display: block; font-weight: 500; font-size: clamp(26px, 3vw, 44px); line-height: 1.15; max-width: 26em; }
+    .screen:first-child p { color: var(--ink); }
+    p, li { max-width: 60ch; }
+    .screen:not(:first-child) > p:first-of-type { font-weight: 500; font-size: clamp(24px, 2.4vw, 38px); line-height: 1.2; max-width: 30em; color: var(--pink); }
+    ul, ol { padding-left: 1.2em; display: flex; flex-direction: column; gap: 10px; color: var(--ink); }
+    li strong { color: var(--pink); font-weight: 500; }
+    img, video { max-width: 100%; border: 2px solid var(--pink); border-radius: 14px; }
+    code { font-family: var(--mono); font-size: .85em; background: #f1f1f1; padding: 2px 6px; border-radius: 6px; color: var(--ink); }
+    pre { background: #f4f4f4; border-radius: 12px; padding: 16px; overflow-x: auto; color: var(--ink); }
+    pre code { background: none; padding: 0; }
+    .table { overflow-x: auto; max-width: 100%; border-top: 2px solid var(--ink); }
+    table { border-collapse: collapse; width: 100%; min-width: 640px; }
+    th { font-family: var(--mono); font-weight: 400; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink); text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--ink); }
+    td { padding: 16px 14px; border-bottom: 1px solid var(--ink); vertical-align: top; color: var(--ink); }
+    td:first-child { color: var(--pink); font-weight: 500; }
+    blockquote { margin: 0; border-left: 6px solid var(--grass); padding-left: 16px; color: var(--ink); font-weight: 500; }
+
+    .band { position: fixed; left: 0; right: 0; bottom: 0; background: var(--grass); color: var(--ink); display: flex; align-items: center; gap: 24px; padding: 12px clamp(16px, 3vw, 48px); flex-wrap: wrap; z-index: 10; }
+    .band .live { font-weight: 500; display: flex; align-items: center; gap: 8px; }
+    .band .live::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--ink); }
+    .band nav { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; }
+    .band nav a { font-family: var(--mono); font-size: 13px; text-decoration: none; border: 1.5px solid var(--ink); border-radius: 30px; padding: 4px 10px; }
+    .band nav a:hover { background: var(--ink); color: var(--grass); }
+    .error { color: var(--ink); font-family: var(--mono); }
+  </style>
+</head>
+<body>
+  <main id="deck"><section class="screen"><p class="error">Loading README.md…</p></section></main>
+  <div class="band"><span class="live" id="band-title">TOUCH_GRASS</span><nav id="band-nav"></nav></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+  <script>
+    (async function () {
+      const deck = document.getElementById('deck');
+      let md;
+      try {
+        const res = await fetch('README.md', { cache: 'no-store' });
+        if (!res.ok) throw new Error(res.status);
+        md = await res.text();
+      } catch (e) {
+        deck.innerHTML = '<section class="screen"><p class="error">Could not load README.md. Run a local server from the repository root (npx serve .) and open /presentation/.</p></section>';
+        return;
+      }
+
+      // Remove HTML comments (template instructions) and stop before the doc-only part.
+      md = md.replace(/<!--[\s\S]*?-->/g, '');
+      md = md.split(/\n### Run it/)[0];
+
+      const html = marked.parse(md);
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      tmp.querySelectorAll('hr').forEach((hr) => hr.remove());
+      tmp.querySelectorAll('table').forEach((t) => { const w = document.createElement('div'); w.className = 'table'; t.replaceWith(w); w.appendChild(t); });
+      tmp.querySelectorAll('a[href^="http"]').forEach((a) => { a.target = '_blank'; a.rel = 'noopener'; });
+
+      // Split into screens at each h2.
+      const screens = [];
+      let current = document.createElement('section');
+      current.className = 'screen';
+      screens.push(current);
+      [...tmp.childNodes].forEach((node) => {
+        if (node.nodeName === 'H2') {
+          current = document.createElement('section');
+          current.className = 'screen';
+          current.id = 's' + screens.length;
+          screens.push(current);
+          const label = document.createElement('span');
+          label.textContent = node.textContent;
+          node.textContent = '';
+          node.appendChild(label);
+        }
+        current.appendChild(node);
+      });
+      deck.replaceChildren(...screens);
+
+      const h1 = deck.querySelector('h1');
+      if (h1) { document.getElementById('band-title').textContent = h1.textContent; document.title = h1.textContent + ' — Touch_Grass'; }
+      document.getElementById('band-nav').innerHTML = screens.slice(1)
+        .map((s) => `<a href="presentation/#${s.id}">${s.querySelector('h2').textContent}</a>`).join('');
+      document.querySelectorAll('#band-nav a').forEach((a) => a.addEventListener('click', (e) => {
+        e.preventDefault(); document.querySelector(a.hash).scrollIntoView();
+      }));
+
+      // Arrow keys / space: one screen at a time.
+      document.addEventListener('keydown', (e) => {
+        if (!['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', ' '].includes(e.key)) return;
+        e.preventDefault();
+        const y = window.scrollY + 10;
+        const tops = screens.map((s) => s.offsetTop);
+        const next = ['ArrowUp', 'PageUp'].includes(e.key)
+          ? [...tops].reverse().find((t) => t < y - 20) ?? 0
+          : tops.find((t) => t > y) ?? tops[tops.length - 1];
+        window.scrollTo({ top: next });
+      });
+    })();
+  </script>
+</body>
+</html>
